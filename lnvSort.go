@@ -7,7 +7,7 @@ type ArrayItem struct {
 
 type Array []ArrayItem
 
-func bubbleAscSort(slice *Array) *Array {
+func BubbleAscSort(slice *Array) *Array {
 	for i := range *slice {
 		for j := 0; j < len(*slice)-i-1; j++ {
 			if (*slice)[j].priority > (*slice)[j+1].priority {
@@ -18,7 +18,7 @@ func bubbleAscSort(slice *Array) *Array {
 	return slice
 }
 
-func bubbleDescSort(slice *Array) *Array {
+func BubbleDescSort(slice *Array) *Array {
 	for i := range *slice {
 		for j := 0; j < len(*slice)-i-1; j++ {
 			if (*slice)[j].priority > (*slice)[j+1].priority {
