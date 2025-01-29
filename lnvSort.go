@@ -10,8 +10,9 @@ type Item struct {
 type Array []Item
 
 // Метод пузырьковой сортировки по возрастанию
-// Внешний цикл количество проходов строго равное длинне сортируемого массива
-// На каждой итерации внешнего цикра перебирается все кроме последних
+// Временная сложность - O(n^2). пространственная сложность - O(1)
+// Внешний цикл выполняет количество проходов строго равное длинне сортируемого массива
+// На каждой итерации внешнего цикла перебираются все кроме последних
 // i элементов массива, где i - текущий номер прохода внешнего массива.
 // На каждом проходе внутреннего массива значение текущего элемента сравнивается.
 // Если их значения не соответствуют порядку сортировки они меняются местами.
@@ -37,26 +38,61 @@ func (slice *Array) DescBubbleSort() {
 	}
 }
 
-func (slice *Array) SelectionSort() {
-
+// Метод сортировки выбором по возрастанию выбором
+// Временная сложность - O(n^2). пространственная сложность - O(1)
+// Внешний цикл выполняет количество проходов строго равное длинне сортируемого массива
+// На каждой итерации внешнего цикла перебираются все кроме i первых отсортированных элементов
+// В ходе перебора определяется наименьший из неотсортированных элементов его позиция меняется с
+// очередным неотсортированным элементом.
+func (slice *Array) SelectionAscSort() {
 	for i, val := range *slice {
 		minIndex := i
 		for j := i + 1; j < len(*slice); j++ {
-			if val.Priority < (*slice)[minIndex] {
-
-			}
-		}
-	}
-
-	n := len(numbers)
-	for i := 0; i < n-1; i++ {
-		minIndex := i
-		for j := i + 1; j < n; j++ {
-			if numbers[j] < numbers[minIndex] {
+			if val.Priority < (*slice)[minIndex].Priority {
 				minIndex = j
 			}
+			(*slice)[i], (*slice)[minIndex] = (*slice)[minIndex], (*slice)[i]
 		}
-		numbers[i], numbers[minIndex] = numbers[minIndex], numbers[i]
+	}
+}
+
+// Метод сортировки выбором по убыванию выбором
+// Все аналогично предыдущему методу
+func (slice *Array) SelectionDescSort() {
+	for i, val := range *slice {
+		minIndex := i
+		for j := i + 1; j < len(*slice); j++ {
+			if val.Priority > (*slice)[minIndex].Priority {
+				minIndex = j
+			}
+			(*slice)[i], (*slice)[minIndex] = (*slice)[minIndex], (*slice)[i]
+		}
+	}
+}
+
+// Метод сортировки вставкой по возрастанию
+// Временная сложность - O(n^2) или O(n) - если уже отсортирован. пространственная сложность - O(1)
+func (slice *Array) InsertAscSort() {
+	for i, val := range *slice {
+		j := i - 1
+		for j >= 0 && (*slice)[j].Priority > val.Priority {
+			(*slice)[j+1] = (*slice)[j]
+			j--
+		}
+		(*slice)[j+1] = val
+	}
+}
+
+// Метод сортировки вставкой по убыванию
+// Все аналогично предыдущему методу
+func (slice *Array) InsertDescSort() {
+	for i, val := range *slice {
+		j := i - 1
+		for j >= 0 && (*slice)[j].Priority < val.Priority {
+			(*slice)[j+1] = (*slice)[j]
+			j--
+		}
+		(*slice)[j+1] = val
 	}
 }
 
@@ -66,12 +102,12 @@ func (slice *Array) SelectionSort() {
 // Срез делится на 2 части и вызывается функция слияния в которой реккурсивно вызывается функция
 // сортировки но уже для каждой половинки исходного массива. Деление происходит до тех пор пока в разделенных
 // массивах не останется по 1 элементу, так как массив с 1 элементом сам по себе априори отсортирован
-func AscMergeSort(slice *[]Item) *[]Item {
+func MergeAscSort(slice *[]Item) *[]Item {
 	if len(*slice) > 1 {
 		m := len(*slice) / 2
 		left := (*slice)[0:m]
 		right := (*slice)[m:len(*slice)]
-		slice = mergeAscArrays(AscMergeSort(&left), AscMergeSort(&right))
+		slice = mergeAscArrays(MergeAscSort(&left), MergeAscSort(&right))
 	}
 	return slice
 }
@@ -96,12 +132,12 @@ func mergeAscArrays(left, right *[]Item) *[]Item {
 }
 
 // Функция сортировки слиянием по убыванию
-func DescMergeSort(slice *[]Item) *[]Item {
+func MergeDescSort(slice *[]Item) *[]Item {
 	if len(*slice) > 1 {
 		m := len(*slice) / 2
 		left := (*slice)[0:m]
 		right := (*slice)[m:len(*slice)]
-		slice = mergeDescArrays(DescMergeSort(&left), DescMergeSort(&right))
+		slice = mergeDescArrays(MergeDescSort(&left), MergeDescSort(&right))
 	}
 	return slice
 }
@@ -124,7 +160,8 @@ func mergeDescArrays(left, right *[]Item) *[]Item {
 }
 
 // Функция быстрой сортировки
-func quickSort(slice *[]Item) *[]Item {
+// Временная сложность в среднем - O(n Log n ), в худшем случае - O(n^2), пространственная сложность O(log n)
+func QuickAscSort(slice *[]Item) *[]Item {
 	if len(*slice) < 2 {
 		return slice
 	}
@@ -139,7 +176,7 @@ func quickSort(slice *[]Item) *[]Item {
 			greater = append(greater, val)
 		}
 	}
-	*slice = append(*quickSort(&less), (*slice)[pivot])
-	*slice = append(*slice, *quickSort(&greater)...)
+	*slice = append(*QuickAscSort(&less), (*slice)[pivot])
+	*slice = append(*slice, *QuickAscSort(&greater)...)
 	return slice
 }
