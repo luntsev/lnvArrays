@@ -6,7 +6,7 @@ import (
 
 type HeapItem struct {
 	Priority int
-	object   interface{}
+	Object   interface{}
 }
 
 type MaxHeap []HeapItem

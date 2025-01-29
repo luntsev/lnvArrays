@@ -101,6 +101,37 @@ func (slice *Array) DescInsertSort() {
 	}
 }
 
+// Метод сортировки двоичной кучей по возрастанию
+// Временная сложность: O(n log n), пространственная сложность: O(1).
+// В кучу с минимальным корнем поочередно добавляются все элементы массива
+// После чего из кучи поочередно извлекаются все элементы в массив
+func (slice *Array) AscHeapSort() {
+	var sortedHeap MinHeap
+
+	for _, val := range *slice {
+		sortedHeap.Push(HeapItem(val))
+	}
+
+	for i, _ := range *slice {
+		heapItem, _ := sortedHeap.Pop()
+		(*slice)[i] = Item(heapItem)
+	}
+}
+
+// Метод сортировки двоичной кучей по убыванию
+func (slice *Array) DescHeapSort() {
+	var sortedHeap MaxHeap
+
+	for _, val := range *slice {
+		sortedHeap.Push(HeapItem(val))
+	}
+
+	for i, _ := range *slice {
+		heapItem, _ := sortedHeap.Pop()
+		(*slice)[i] = Item(heapItem)
+	}
+}
+
 // Функция сортировки слиянием по возрастанию
 // Так как данный алгоритм предусматривает рекурсивные вызовы реализовать его в виде метода
 // не представляется возможным, разве что написать отдельную рекурсивную функцию, вызываемую из метода.
