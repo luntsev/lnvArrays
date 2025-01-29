@@ -2,8 +2,8 @@ package lnvArrays
 
 // Структура элемента массива, где priority - его приоритет, а object - любой объект
 type Item struct {
-	priority int
-	object   interface{}
+	Priority int
+	Object   interface{}
 }
 
 // Массив элементов, без объявления этого типа к нему не получится привязать методы
@@ -18,7 +18,7 @@ type Array []Item
 func (slice *Array) AscBubbleSort() {
 	for i := range *slice {
 		for j := 0; j < len(*slice)-i-1; j++ {
-			if (*slice)[j].priority > (*slice)[j+1].priority {
+			if (*slice)[j].Priority > (*slice)[j+1].Priority {
 				(*slice)[j], (*slice)[j+1] = (*slice)[j+1], (*slice)[j]
 			}
 		}
@@ -30,10 +30,33 @@ func (slice *Array) AscBubbleSort() {
 func (slice *Array) DescBubbleSort() {
 	for i := range *slice {
 		for j := 0; j < len(*slice)-i-1; j++ {
-			if (*slice)[j].priority > (*slice)[j+1].priority {
+			if (*slice)[j].Priority > (*slice)[j+1].Priority {
 				(*slice)[j], (*slice)[j+1] = (*slice)[j+1], (*slice)[j]
 			}
 		}
+	}
+}
+
+func (slice *Array) SelectionSort() {
+
+	for i, val := range *slice {
+		minIndex := i
+		for j := i + 1; j < len(*slice); j++ {
+			if val.Priority < (*slice)[minIndex] {
+
+			}
+		}
+	}
+
+	n := len(numbers)
+	for i := 0; i < n-1; i++ {
+		minIndex := i
+		for j := i + 1; j < n; j++ {
+			if numbers[j] < numbers[minIndex] {
+				minIndex = j
+			}
+		}
+		numbers[i], numbers[minIndex] = numbers[minIndex], numbers[i]
 	}
 }
 
@@ -61,7 +84,7 @@ func mergeAscArrays(left, right *[]Item) *[]Item {
 	slice := make([]Item, len(*left)+len(*right))
 
 	for k, _ := range slice {
-		if j == len(*right) || (i < len(*left) && (*left)[i].priority <= (*right)[j].priority) {
+		if j == len(*right) || (i < len(*left) && (*left)[i].Priority <= (*right)[j].Priority) {
 			slice[k] = (*left)[i]
 			i++
 		} else {
@@ -89,7 +112,7 @@ func mergeDescArrays(left, right *[]Item) *[]Item {
 	slice := make([]Item, len(*left)+len(*right))
 
 	for k, _ := range slice {
-		if j == len(*right) || (i < len(*left) && (*left)[i].priority >= (*right)[j].priority) {
+		if j == len(*right) || (i < len(*left) && (*left)[i].Priority >= (*right)[j].Priority) {
 			slice[k] = (*left)[i]
 			i++
 		} else {
@@ -110,7 +133,7 @@ func quickSort(slice *[]Item) *[]Item {
 	var less, greater []Item
 
 	for _, val := range (*slice)[1:] {
-		if val.priority <= (*slice)[pivot].priority {
+		if val.Priority <= (*slice)[pivot].Priority {
 			less = append(less, val)
 		} else {
 			greater = append(greater, val)
