@@ -119,6 +119,7 @@ func (slice *Array) AscHeapSort() {
 }
 
 // Метод сортировки двоичной кучей по убыванию
+// Все аналогично предыдущему методу
 func (slice *Array) DescHeapSort() {
 	var sortedHeap MaxHeap
 
@@ -130,6 +131,62 @@ func (slice *Array) DescHeapSort() {
 		heapItem, _ := sortedHeap.Pop()
 		(*slice)[i] = Item(heapItem)
 	}
+}
+
+// Метод сортировки слиянием по возрастанию с использованием Горутин
+// Несмотря на то, что данный алгоритм предусматривает рекурсивные вызовы он реализован его в виде метода.
+// Для этого определена инициализирующая функция (которая и представляет метод), которая вызывает аналогичную
+// себе функцию, которая в свою очередь уже является рекурсивной. Этот вызов происходит 2 раза каждый из которых
+// в отдельной горутине.
+func (slice *Array) AscMergeSortMT() {
+	if len(*slice) < 2 {
+		return
+	}
+	m := len(*slice) / 2
+	left := (*slice)[:m]
+	right := (*slice)[m:]
+	inLeftChan := make(chan Array)
+	inRightChan := make(chan Array)
+	go ascMergeSortMT(&left, inLeftChan)
+	go ascMergeSortMT(&right, inRightChan)
+	leftArray := <-inLeftChan
+	rightArray := <-inRightChan
+	*slice = mergeAscArraysMT(&leftArray, &rightArray)
+}
+
+// Внутренняя функция для метода сортировки слиянием по возрастанию, представляет из себя клон метода AscMergeSort
+// с той разницей, что предусматривает реккурсивные вызови и поэтому поддерживает связь между ними через каналы
+func ascMergeSortMT(slice *Array, outChannel chan Array) {
+	if len(*slice) < 2 {
+		return
+	}
+	m := len(*slice) / 2
+	left := (*slice)[:m]
+	right := (*slice)[m:]
+	inLeftChan := make(chan Array)
+	inRightChan := make(chan Array)
+	go ascMergeSortMT(&left, inLeftChan)
+	go ascMergeSortMT(&right, inRightChan)
+	leftArray := <-inLeftChan
+	rightArray := <-inRightChan
+	outChannel <- mergeAscArraysMT(&leftArray, &rightArray)
+}
+
+// Внутренняя функция слияния 2- массивов в порядке возрастания элементов, для соответствующего метода
+func mergeAscArraysMT(left, right *Array) Array {
+	var i, j int
+	slice := make([]Item, len(*left)+len(*right))
+
+	for k, _ := range slice {
+		if j == len(*right) || (i < len(*left) && (*left)[i].Priority <= (*right)[j].Priority) {
+			slice[k] = (*left)[i]
+			i++
+		} else {
+			slice[k] = (*right)[j]
+			j++
+		}
+	}
+	return slice
 }
 
 // Функция сортировки слиянием по возрастанию
