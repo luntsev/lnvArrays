@@ -65,12 +65,12 @@ func (slice *Array) AscSelectionSort() {
 // Все аналогично предыдущему методу
 func (slice *Array) DesсSelectionSort() {
 	for i, val := range *slice {
-		minIndex := i
+		maxIndex := i
 		for j := i + 1; j < len(*slice); j++ {
 			if val.Priority < (*slice)[j].Priority {
-				minIndex = j
+				maxIndex = j
 			}
-			(*slice)[i], (*slice)[minIndex] = (*slice)[minIndex], (*slice)[i]
+			(*slice)[i], (*slice)[maxIndex] = (*slice)[maxIndex], (*slice)[i]
 		}
 	}
 }
