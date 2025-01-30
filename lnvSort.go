@@ -141,9 +141,9 @@ func (slice *Array) DescHeapSort() {
 func AscMergeSort(slice *[]Item) *[]Item {
 	if len(*slice) > 1 {
 		m := len(*slice) / 2
-		left := (*slice)[0:m]
-		right := (*slice)[m:len(*slice)]
-		slice = mergeAscArrays(AscMergeSort(&left), AscMergeSort(&right))
+		left := (*slice)[:m]
+		right := (*slice)[m:]
+		*slice = mergeAscArrays(AscMergeSort(&left), AscMergeSort(&right))
 	}
 	return slice
 }
@@ -151,7 +151,7 @@ func AscMergeSort(slice *[]Item) *[]Item {
 // Внутренняя функция слияния 2- массивов в порядке возрастания элементов
 // Сливает элементу двух массивов в один беря текущие наименьшие из каждого массива так как сливаемые
 // массивы сами по себе отсортированы
-func mergeAscArrays(left, right *[]Item) *[]Item {
+func mergeAscArrays(left, right *[]Item) []Item {
 	var i, j int
 	slice := make([]Item, len(*left)+len(*right))
 
@@ -164,7 +164,7 @@ func mergeAscArrays(left, right *[]Item) *[]Item {
 			j++
 		}
 	}
-	return &slice
+	return slice
 }
 
 // Функция сортировки слиянием по убыванию
@@ -173,13 +173,13 @@ func DescMergeSort(slice *[]Item) *[]Item {
 		m := len(*slice) / 2
 		left := (*slice)[0:m]
 		right := (*slice)[m:len(*slice)]
-		slice = mergeDescArrays(DescMergeSort(&left), DescMergeSort(&right))
+		*slice = mergeDescArrays(DescMergeSort(&left), DescMergeSort(&right))
 	}
 	return slice
 }
 
 // Внутренняя функция слияния 2- массивов в порядке убывания элементов
-func mergeDescArrays(left, right *[]Item) *[]Item {
+func mergeDescArrays(left, right *[]Item) []Item {
 	var i, j int
 	slice := make([]Item, len(*left)+len(*right))
 
@@ -192,7 +192,7 @@ func mergeDescArrays(left, right *[]Item) *[]Item {
 			j++
 		}
 	}
-	return &slice
+	return slice
 }
 
 // Функция быстрой сортировки
