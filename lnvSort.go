@@ -189,6 +189,56 @@ func mergeAscArraysMT(left, right *Array) Array {
 	return slice
 }
 
+// Метод сортировки слиянием по убыванию с использованием Горутин
+// Все аналогично вышеуказанному
+func (slice *Array) DescMergeSortMT() {
+	if len(*slice) < 2 {
+		return
+	}
+	m := len(*slice) / 2
+	left := (*slice)[:m]
+	right := (*slice)[m:]
+	inLeftChan := make(chan Array)
+	inRightChan := make(chan Array)
+	go descMergeSortMT(&left, inLeftChan)
+	go descMergeSortMT(&right, inRightChan)
+	leftArray := <-inLeftChan
+	rightArray := <-inRightChan
+	*slice = mergeDescArraysMT(&leftArray, &rightArray)
+}
+
+func descMergeSortMT(slice *Array, outChannel chan Array) {
+	if len(*slice) < 2 {
+		return
+	}
+	m := len(*slice) / 2
+	left := (*slice)[:m]
+	right := (*slice)[m:]
+	inLeftChan := make(chan Array)
+	inRightChan := make(chan Array)
+	go descMergeSortMT(&left, inLeftChan)
+	go descMergeSortMT(&right, inRightChan)
+	leftArray := <-inLeftChan
+	rightArray := <-inRightChan
+	outChannel <- mergeDescArraysMT(&leftArray, &rightArray)
+}
+
+func mergeDescArraysMT(left, right *Array) Array {
+	var i, j int
+	slice := make([]Item, len(*left)+len(*right))
+
+	for k, _ := range slice {
+		if j == len(*right) || (i < len(*left) && (*left)[i].Priority >= (*right)[j].Priority) {
+			slice[k] = (*left)[i]
+			i++
+		} else {
+			slice[k] = (*right)[j]
+			j++
+		}
+	}
+	return slice
+}
+
 // Функция сортировки слиянием по возрастанию
 // Так как данный алгоритм предусматривает рекурсивные вызовы реализовать его в виде метода
 // не представляется возможным, разве что написать отдельную рекурсивную функцию, вызываемую из метода.
@@ -252,7 +302,7 @@ func mergeDescArrays(left, right *[]Item) []Item {
 	return slice
 }
 
-// Функция быстрой сортировки
+// Функция быстрой сортировки по возрастанию
 // Временная сложность в среднем - O(n Log n ), в худшем случае - O(n^2), пространственная сложность O(log n)
 func AscQuickSort(slice *[]Item) *[]Item {
 	if len(*slice) < 2 {
@@ -274,7 +324,7 @@ func AscQuickSort(slice *[]Item) *[]Item {
 	return slice
 }
 
-// Функция быстрой сортировки
+// Функция быстрой сортировки по убыванию
 // Временная сложность в среднем - O(n Log n ), в худшем случае - O(n^2), пространственная сложность O(log n)
 func DescQuickSort(slice *[]Item) *[]Item {
 	if len(*slice) < 2 {
