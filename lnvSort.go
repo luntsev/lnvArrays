@@ -63,7 +63,7 @@ func (slice *Array) AscSelectionSort() {
 
 // Метод сортировки выбором по убыванию выбором
 // Все аналогично предыдущему методу
-func (slice *Array) DeskSelectionSort() {
+func (slice *Array) DesсSelectionSort() {
 	for i, val := range *slice {
 		minIndex := i
 		for j := i + 1; j < len(*slice); j++ {
