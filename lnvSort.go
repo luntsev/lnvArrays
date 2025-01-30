@@ -138,44 +138,45 @@ func (slice *Array) DescHeapSort() {
 // Для этого определена инициализирующая функция (которая и представляет метод), которая вызывает аналогичную
 // себе функцию, которая в свою очередь уже является рекурсивной. Этот вызов происходит 2 раза каждый из которых
 // в отдельной горутине.
-func (slice *Array) AscMergeSortMT() {
+func (slice *Array) GoAscMergeSort() {
 	if len(*slice) < 2 {
 		return
 	}
 	m := len(*slice) / 2
 	left := (*slice)[:m]
 	right := (*slice)[m:]
-	inLeftChan := make(chan Array)
-	inRightChan := make(chan Array)
-	go ascMergeSortMT(&left, inLeftChan)
-	go ascMergeSortMT(&right, inRightChan)
+	inLeftChan := make(chan Array, 1)
+	inRightChan := make(chan Array, 1)
+	go goAscMergeSort(&left, inLeftChan)
+	go goAscMergeSort(&right, inRightChan)
 	var leftArray, rightArray Array
 	leftArray = <-inLeftChan
 	rightArray = <-inRightChan
-	*slice = mergeAscArraysMT(&leftArray, &rightArray)
+	*slice = goMergeAscArrays(&leftArray, &rightArray)
 }
 
 // Внутренняя функция для метода сортировки слиянием по возрастанию, представляет из себя клон метода AscMergeSort
-// с той разницей, что предусматривает реккурсивные вызови и поэтому поддерживает связь между ними через каналы
-func ascMergeSortMT(slice *Array, outChannel chan Array) {
+// с той разницей, что предусматривает рекурсивные вызови и поэтому поддерживает связь между ними через каналы
+func goAscMergeSort(slice *Array, outChannel chan Array) {
 	if len(*slice) < 2 {
 		return
 	}
 	m := len(*slice) / 2
 	left := (*slice)[:m]
 	right := (*slice)[m:]
-	inLeftChan := make(chan Array)
-	inRightChan := make(chan Array)
-	go ascMergeSortMT(&left, inLeftChan)
-	go ascMergeSortMT(&right, inRightChan)
+	inLeftChan := make(chan Array, 1)
+	inRightChan := make(chan Array, 1)
+	go goAscMergeSort(&left, inLeftChan)
+	go goAscMergeSort(&right, inRightChan)
 	var leftArray, rightArray Array
 	leftArray = <-inLeftChan
 	rightArray = <-inRightChan
-	outChannel <- mergeAscArraysMT(&leftArray, &rightArray)
+	outChannel <- goMergeAscArrays(&leftArray, &rightArray)
+	close(outChannel)
 }
 
 // Внутренняя функция слияния 2- массивов в порядке возрастания элементов, для соответствующего метода
-func mergeAscArraysMT(left, right *Array) Array {
+func goMergeAscArrays(left, right *Array) Array {
 	var i, j int
 	slice := make([]Item, len(*left)+len(*right))
 
