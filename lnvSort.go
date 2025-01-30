@@ -56,8 +56,8 @@ func (slice *Array) AscSelectionSort() {
 			if val.Priority > (*slice)[j].Priority {
 				minIndex = j
 			}
-			(*slice)[i], (*slice)[minIndex] = (*slice)[minIndex], (*slice)[i]
 		}
+		(*slice)[i], (*slice)[minIndex] = (*slice)[minIndex], (*slice)[i]
 	}
 }
 
@@ -70,8 +70,8 @@ func (slice *Array) DesсSelectionSort() {
 			if val.Priority < (*slice)[j].Priority {
 				maxIndex = j
 			}
-			(*slice)[i], (*slice)[maxIndex] = (*slice)[maxIndex], (*slice)[i]
 		}
+		(*slice)[i], (*slice)[maxIndex] = (*slice)[maxIndex], (*slice)[i]
 	}
 }
 
