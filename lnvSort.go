@@ -159,6 +159,8 @@ func (slice *Array) GoAscMergeSort() {
 // с той разницей, что предусматривает рекурсивные вызови и поэтому поддерживает связь между ними через каналы
 func goAscMergeSort(slice *Array, outChannel chan Array) {
 	if len(*slice) < 2 {
+		outChannel <- *slice
+		close(outChannel)
 		return
 	}
 	m := len(*slice) / 2
@@ -194,7 +196,7 @@ func goMergeAscArrays(left, right *Array) Array {
 
 // Метод сортировки слиянием по убыванию с использованием Горутин
 // Все аналогично вышеуказанному
-func (slice *Array) DescMergeSortMT() {
+func (slice *Array) GoDescMergeSort() {
 	if len(*slice) < 2 {
 		return
 	}
@@ -203,16 +205,18 @@ func (slice *Array) DescMergeSortMT() {
 	right := (*slice)[m:]
 	inLeftChan := make(chan Array)
 	inRightChan := make(chan Array)
-	go descMergeSortMT(&left, inLeftChan)
-	go descMergeSortMT(&right, inRightChan)
+	go goDescMergeSort(&left, inLeftChan)
+	go goDescMergeSort(&right, inRightChan)
 	var leftArray, rightArray Array
 	leftArray = <-inLeftChan
 	rightArray = <-inRightChan
-	*slice = mergeDescArraysMT(&leftArray, &rightArray)
+	*slice = goMergeDescArrays(&leftArray, &rightArray)
 }
 
-func descMergeSortMT(slice *Array, outChannel chan Array) {
+func goDescMergeSort(slice *Array, outChannel chan Array) {
 	if len(*slice) < 2 {
+		outChannel <- *slice
+		close(outChannel)
 		return
 	}
 	m := len(*slice) / 2
@@ -220,15 +224,15 @@ func descMergeSortMT(slice *Array, outChannel chan Array) {
 	right := (*slice)[m:]
 	inLeftChan := make(chan Array)
 	inRightChan := make(chan Array)
-	go descMergeSortMT(&left, inLeftChan)
-	go descMergeSortMT(&right, inRightChan)
+	go goDescMergeSort(&left, inLeftChan)
+	go goDescMergeSort(&right, inRightChan)
 	var leftArray, rightArray Array
 	leftArray = <-inLeftChan
 	rightArray = <-inRightChan
-	outChannel <- mergeDescArraysMT(&leftArray, &rightArray)
+	outChannel <- goMergeDescArrays(&leftArray, &rightArray)
 }
 
-func mergeDescArraysMT(left, right *Array) Array {
+func goMergeDescArrays(left, right *Array) Array {
 	var i, j int
 	slice := make([]Item, len(*left)+len(*right))
 
