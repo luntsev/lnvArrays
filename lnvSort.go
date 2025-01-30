@@ -149,8 +149,9 @@ func (slice *Array) AscMergeSortMT() {
 	inRightChan := make(chan Array)
 	go ascMergeSortMT(&left, inLeftChan)
 	go ascMergeSortMT(&right, inRightChan)
-	leftArray := <-inLeftChan
-	rightArray := <-inRightChan
+	var leftArray, rightArray Array
+	leftArray = <-inLeftChan
+	rightArray = <-inRightChan
 	*slice = mergeAscArraysMT(&leftArray, &rightArray)
 }
 
@@ -167,8 +168,9 @@ func ascMergeSortMT(slice *Array, outChannel chan Array) {
 	inRightChan := make(chan Array)
 	go ascMergeSortMT(&left, inLeftChan)
 	go ascMergeSortMT(&right, inRightChan)
-	leftArray := <-inLeftChan
-	rightArray := <-inRightChan
+	var leftArray, rightArray Array
+	leftArray = <-inLeftChan
+	rightArray = <-inRightChan
 	outChannel <- mergeAscArraysMT(&leftArray, &rightArray)
 }
 
@@ -202,8 +204,9 @@ func (slice *Array) DescMergeSortMT() {
 	inRightChan := make(chan Array)
 	go descMergeSortMT(&left, inLeftChan)
 	go descMergeSortMT(&right, inRightChan)
-	leftArray := <-inLeftChan
-	rightArray := <-inRightChan
+	var leftArray, rightArray Array
+	leftArray = <-inLeftChan
+	rightArray = <-inRightChan
 	*slice = mergeDescArraysMT(&leftArray, &rightArray)
 }
 
@@ -218,8 +221,9 @@ func descMergeSortMT(slice *Array, outChannel chan Array) {
 	inRightChan := make(chan Array)
 	go descMergeSortMT(&left, inLeftChan)
 	go descMergeSortMT(&right, inRightChan)
-	leftArray := <-inLeftChan
-	rightArray := <-inRightChan
+	var leftArray, rightArray Array
+	leftArray = <-inLeftChan
+	rightArray = <-inRightChan
 	outChannel <- mergeDescArraysMT(&leftArray, &rightArray)
 }
 
