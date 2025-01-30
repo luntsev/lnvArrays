@@ -1,8 +1,6 @@
 package lnvArrays
 
-import (
-	"errors"
-)
+import "errors"
 
 type HeapItem struct {
 	Priority int
