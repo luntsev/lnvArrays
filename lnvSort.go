@@ -50,10 +50,10 @@ func (slice *Array) DescBubbleSort() {
 // В ходе перебора определяется наименьший из неотсортированных элементов его позиция меняется с
 // очередным неотсортированным элементом.
 func (slice *Array) AscSelectionSort() {
-	for i, val := range *slice {
+	for i, _ := range *slice {
 		minIndex := i
 		for j := i + 1; j < len(*slice); j++ {
-			if val.Priority > (*slice)[j].Priority {
+			if (*slice)[minIndex].Priority > (*slice)[j].Priority {
 				minIndex = j
 			}
 		}
@@ -64,10 +64,10 @@ func (slice *Array) AscSelectionSort() {
 // Метод сортировки выбором по убыванию выбором
 // Все аналогично предыдущему методу
 func (slice *Array) DesсSelectionSort() {
-	for i, val := range *slice {
+	for i, _ := range *slice {
 		maxIndex := i
 		for j := i + 1; j < len(*slice); j++ {
-			if val.Priority < (*slice)[j].Priority {
+			if (*slice)[maxIndex].Priority < (*slice)[j].Priority {
 				maxIndex = j
 			}
 		}
