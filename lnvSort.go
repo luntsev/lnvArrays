@@ -333,6 +333,29 @@ func AscQuickSort(slice *[]Item) *[]Item {
 	return slice
 }
 
+// Функция быстрой сортировки по убыванию
+// Временная сложность в среднем - O(n Log n ), в худшем случае - O(n^2), пространственная сложность O(log n)
+func DescQuickSort(slice *[]Item) *[]Item {
+	if len(*slice) < 2 {
+		return slice
+	}
+
+	pivot := 0
+	var less, greater []Item
+
+	for _, val := range (*slice)[1:] {
+		if val.Priority >= (*slice)[pivot].Priority {
+			less = append(less, val)
+		} else {
+			greater = append(greater, val)
+		}
+	}
+	*slice = append(*DescQuickSort(&less), (*slice)[pivot])
+	*slice = append(*slice, *DescQuickSort(&greater)...)
+	return slice
+}
+
+// Функция быстрой сортировки по возрастанию с Гортинами
 func (slice *Array) GoAscQuickSort() {
 	if len(*slice) < 2 {
 		return
@@ -359,8 +382,8 @@ func (slice *Array) GoAscQuickSort() {
 
 func goAscQuickSort(slice *Array, outChan chan Array) {
 	if len(*slice) < 2 {
-		return
 		close(outChan)
+		return
 	}
 
 	pivot := 0
@@ -382,17 +405,17 @@ func goAscQuickSort(slice *Array, outChan chan Array) {
 	returnedSlice = append(*slice, <-greaterChan...)
 	close(greaterChan)
 	outChan <- returnedSlice
+	close(outChan)
 }
 
-// Функция быстрой сортировки по убыванию
-// Временная сложность в среднем - O(n Log n ), в худшем случае - O(n^2), пространственная сложность O(log n)
-func DescQuickSort(slice *[]Item) *[]Item {
+// Функция быстрой сортировки по убыванию с Гортинами
+func (slice *Array) GoDescQuickSort() {
 	if len(*slice) < 2 {
-		return slice
+		return
 	}
 
 	pivot := 0
-	var less, greater []Item
+	var less, greater Array
 
 	for _, val := range (*slice)[1:] {
 		if val.Priority >= (*slice)[pivot].Priority {
@@ -401,7 +424,39 @@ func DescQuickSort(slice *[]Item) *[]Item {
 			greater = append(greater, val)
 		}
 	}
-	*slice = append(*DescQuickSort(&less), (*slice)[pivot])
-	*slice = append(*slice, *DescQuickSort(&greater)...)
-	return slice
+
+	lessChan := make(chan Array, 2)
+	greaterChan := make(chan Array, 2)
+	go goAscQuickSort(&less, lessChan)
+	go goAscQuickSort(&greater, greaterChan)
+	*slice = append(<-lessChan, (*slice)[pivot])
+	*slice = append(*slice, <-greaterChan...)
+}
+
+func goDescQuickSort(slice *Array, outChan chan Array) {
+	if len(*slice) < 2 {
+		close(outChan)
+		return
+	}
+
+	pivot := 0
+	var less, greater Array
+
+	for _, val := range (*slice)[1:] {
+		if val.Priority >= (*slice)[pivot].Priority {
+			less = append(less, val)
+		} else {
+			greater = append(greater, val)
+		}
+	}
+	lessChan := make(chan Array, 2)
+	greaterChan := make(chan Array, 2)
+	go goAscQuickSort(&less, lessChan)
+	go goAscQuickSort(&greater, greaterChan)
+	returnedSlice := append(<-lessChan, (*slice)[pivot])
+	close(lessChan)
+	returnedSlice = append(*slice, <-greaterChan...)
+	close(greaterChan)
+	outChan <- returnedSlice
+	close(outChan)
 }
