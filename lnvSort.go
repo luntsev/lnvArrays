@@ -401,9 +401,7 @@ func goAscQuickSort(slice *Array, outChan chan Array) {
 	go goAscQuickSort(&less, lessChan)
 	go goAscQuickSort(&greater, greaterChan)
 	returnedSlice := append(<-lessChan, (*slice)[pivot])
-	close(lessChan)
 	returnedSlice = append(*slice, <-greaterChan...)
-	close(greaterChan)
 	outChan <- returnedSlice
 	close(outChan)
 }
@@ -454,9 +452,7 @@ func goDescQuickSort(slice *Array, outChan chan Array) {
 	go goAscQuickSort(&less, lessChan)
 	go goAscQuickSort(&greater, greaterChan)
 	returnedSlice := append(<-lessChan, (*slice)[pivot])
-	close(lessChan)
 	returnedSlice = append(*slice, <-greaterChan...)
-	close(greaterChan)
 	outChan <- returnedSlice
 	close(outChan)
 }
