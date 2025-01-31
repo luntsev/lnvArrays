@@ -333,6 +333,57 @@ func AscQuickSort(slice *[]Item) *[]Item {
 	return slice
 }
 
+func (slice *Array) GoAscQuickSort() {
+	if len(*slice) < 2 {
+		return
+	}
+
+	pivot := 0
+	var less, greater Array
+
+	for _, val := range (*slice)[1:] {
+		if val.Priority <= (*slice)[pivot].Priority {
+			less = append(less, val)
+		} else {
+			greater = append(greater, val)
+		}
+	}
+
+	lessChan := make(chan Array, 2)
+	greaterChan := make(chan Array, 2)
+	go goAscQuickSort(&less, lessChan)
+	go goAscQuickSort(&greater, greaterChan)
+	*slice = append(<-lessChan, (*slice)[pivot])
+	*slice = append(*slice, <-greaterChan...)
+}
+
+func goAscQuickSort(slice *Array, outChan chan Array) {
+	if len(*slice) < 2 {
+		return
+		close(outChan)
+	}
+
+	pivot := 0
+	var less, greater Array
+
+	for _, val := range (*slice)[1:] {
+		if val.Priority <= (*slice)[pivot].Priority {
+			less = append(less, val)
+		} else {
+			greater = append(greater, val)
+		}
+	}
+	lessChan := make(chan Array, 2)
+	greaterChan := make(chan Array, 2)
+	go goAscQuickSort(&less, lessChan)
+	go goAscQuickSort(&greater, greaterChan)
+	returnedSlice := append(<-lessChan, (*slice)[pivot])
+	close(lessChan)
+	returnedSlice = append(*slice, <-greaterChan...)
+	close(greaterChan)
+	outChan <- returnedSlice
+}
+
 // Функция быстрой сортировки по убыванию
 // Временная сложность в среднем - O(n Log n ), в худшем случае - O(n^2), пространственная сложность O(log n)
 func DescQuickSort(slice *[]Item) *[]Item {
