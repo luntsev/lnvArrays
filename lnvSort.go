@@ -35,10 +35,15 @@ func (slice *Array) AscBubbleSort() {
 // Все аналогично предыдущему методу
 func (slice *Array) DescBubbleSort() {
 	for i := range *slice {
+		swap := false
 		for j := 0; j < len(*slice)-i-1; j++ {
 			if (*slice)[j].Priority > (*slice)[j+1].Priority {
 				(*slice)[j], (*slice)[j+1] = (*slice)[j+1], (*slice)[j]
+				swap = true
 			}
+		}
+		if !swap {
+			break
 		}
 	}
 }
