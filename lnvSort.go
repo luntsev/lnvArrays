@@ -133,6 +133,93 @@ func (slice *Array) DescHeapSort() {
 	}
 }
 
+// Метод поразрядной сортировки по убыванию
+// Временная сложность O(n), пространственная сложность O(n)
+func (slice *Array) AscRadixSort() {
+	maxNumberLen := -1
+
+	for _, val := range *slice {
+		numberLen := 0
+		for val.Priority > 0 {
+			numberLen++
+			val.Priority /= 10
+		}
+		if maxNumberLen < numberLen || maxNumberLen == -1 {
+			maxNumberLen = numberLen
+		}
+	}
+
+	digitCounts := 10
+
+	p := 1 // степень 10. Нужна для получения очередного разряда
+
+	pocket := make([][]Item, digitCounts)
+	//pocket := make([][]int, digitCounts) // массив для распределения элементов по "корзинам"
+	for i, _ := range pocket {
+		pocket[i] = make([]Item, 0)
+	}
+
+	for range maxNumberLen { // проходимся по разрядам
+		for j, _ := range *slice { // проходимся по числам
+			index := ((*slice)[j].Priority / p) % 10
+			pocket[index] = append(pocket[index], (*slice)[j]) // добавляем
+		}
+
+		count := 0                         // на каком месте вставляем в первоначальном списке
+		for j := 0; j < digitCounts; j++ { // проходимся по корзине
+			for k, _ := range pocket[j] { // проходимся по элементам очередной корзины
+				(*slice)[count] = pocket[j][k] // перебрасываем обратно в первоначальный список
+				count++                        // увеличиваем место вставки элемента в первоначальном списке
+			}
+			pocket[j] = pocket[j][:0] // очищаем корзину
+		}
+		p *= 10 // получаем следующую степень
+	}
+}
+
+// Метод поразрядной сортировки по убыванию
+func (slice *Array) DescRadixSort() {
+	maxNumberLen := -1
+
+	for _, val := range *slice {
+		numberLen := 0
+		for val.Priority > 0 {
+			numberLen++
+			val.Priority /= 10
+		}
+		if maxNumberLen < numberLen || maxNumberLen == -1 {
+			maxNumberLen = numberLen
+		}
+	}
+
+	digitCounts := 10
+
+	p := 1 // степень 10. Нужна для получения очередного разряда
+
+	pocket := make([][]Item, digitCounts)
+	//pocket := make([][]int, digitCounts) // массив для распределения элементов по "корзинам"
+	for i, _ := range pocket {
+		pocket[i] = make([]Item, 0)
+	}
+
+	for range maxNumberLen { // проходимся по разрядам
+		for j, _ := range *slice { // проходимся по числам
+			index := ((*slice)[j].Priority / p) % 10
+			pocket[index] = append(pocket[index], (*slice)[j]) // добавляем
+		}
+
+		count := 0                              // на каком месте вставляем в первоначальном списке
+		for j := digitCounts - 1; j >= 0; j-- { // проходимся по корзине
+			for k, _ := range pocket[j] { // проходимся по элементам очередной корзины
+				(*slice)[count] = pocket[j][k] // перебрасываем обратно в первоначальный список
+				count++                        // увеличиваем место вставки элемента в первоначальном списке
+			}
+			pocket[j] = pocket[j][:0] // очищаем корзину
+		}
+		p *= 10 // получаем следующую степень
+	}
+}
+
 // Функция сортировки слиянием по возрастанию
 // Так как данный алгоритм предусматривает рекурсивные вызовы реализовать его в виде метода
 // не представляется возможным, разве что написать отдельную рекурсивную функцию, вызываемую из метода.
